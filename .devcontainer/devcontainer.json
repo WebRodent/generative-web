@@ -1,0 +1,91 @@
+{
+	"name": "Go and TimescaleDB Composed",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-from-docker:1": {
+			"version": "latest",
+			"moby": false
+		}
+	},
+	"workspaceFolder": "/workspaces/generative-web",
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// add copilot and go extension and postgres driver for SQLTools
+			"extensions": [
+				"golang.go",
+				"Copilot.copilot",
+				"mtxr.sqltools",
+				"mtxr.sqltools-driver-pg"
+			],
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"go.gopath": "/go",
+				"go.toolsManagement.autoUpdate": true,
+				"go.useLanguageServer": true,
+				"go.toolsEnvVars": {
+					"GO111MODULE": "on"
+				},
+				"go.testFlags": [
+					"-v"
+				],
+				"go.testEnvVars": {
+					"GO111MODULE": "on",
+					"PGHOST": "db",
+					"PGPORT": "5432",
+					"PGUSER": "postgres",
+					"PGPASSWORD": "postgres",
+					"PGDATABASE": "postgres"
+				},
+				"go.lintFlags": [
+					"--fast"
+				],
+				"go.lintTool": "golangci-lint",
+				"go.lintOnSave": "package",
+				"go.toolsManagement.checkForUpdates": "local",
+				"go.goroot": "/usr/local/go",
+				"go.toolsGopath": "/go",
+				"go.coverOnSave": true,
+				"go.coverageDecorator": {
+					"type": "gutter",
+					"coveredHighlightColor": "rgba(64,128,128,0.5)",
+					"uncoveredHighlightColor": "rgba(128,64,64,0.25)"
+				},
+				"go.coverOnSaveTimeout": "60s",
+				"go.coverOnSaveOutputDirectory": "${workspaceFolder}/coverage",
+				"go.testTimeout": "60s",
+				"sqltools.connections": [
+					{
+						"name": "TimescaleDB-local",
+						"driver": "PostgreSQL",
+						"host": "db",
+						"port": 5432,
+						"username": "postgres",
+						"password": "postgres",
+						"database": "postgres",
+						"ssl": false,
+						"savePassword": true,
+						"lowerCaseIdentifiers": false,
+						"keepConnectionAlive": true,
+						"applicationName": "SQLTools"
+					}
+				],
+				"sqltools.autoConnectTo": [
+					"TimescaleDB-local"
+				]
+			}
+		}
+	},
+	// "remoteUser": "vscode",
+	"mounts": [
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+	],
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [5432, 8080]
+	// Run go mod download and ./install_tools after container is setup
+	"postStartCommand": " go mod download && ${workspaceFolder}/.devcontainer/install_tools.sh"
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}
