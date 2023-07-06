@@ -15,12 +15,16 @@
 !go.mod
 !go.sum
 !main.go
-!tools.go
+!config.yml.example
 
 # air config file
 !.air.toml
 
 ## Directories to include ##
+!cmd
+!internal
+!pkg
+!templates
 !.devcontainer
 !.github
 !.github/workflows
@@ -32,5 +36,3 @@
 
 # if you want to ignore further subdirectory files and directories
 # you need to add them here
-
-!sql

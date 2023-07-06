@@ -1,9 +1,6 @@
-// simple api setup
-package main
+package generativeweb
 
 import (
-	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,74 +8,38 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v5/pgxpool"
+
+	"generative-web/internal/config"
+	"generative-web/pkg/database"
+	"generative-web/pkg/handlers"
 )
-
-type DBConnection struct {
-	Conn *pgxpool.Pool
-}
-
-func (db *DBConnection) InitConnection() error {
-	var err error
-	db.Conn, err = pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (db *DBConnection) Close() {
-	db.Conn.Close()
-}
-
-func status(w http.ResponseWriter, r *http.Request) {
-	conn := DBConnection{}
-	err := conn.InitConnection()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close()
-	fmt.Fprintln(w, "Server is running...")
-	// check database connection
-	err = conn.Conn.Ping(context.Background())
-	if err != nil {
-		fmt.Fprintln(w, "Database connection failed: ", err)
-		// create database handler
-		log.Println("Initializing database handler...")
-		err = conn.InitConnection()
-		if err != nil {
-			log.Println("failed at retry: ", err)
-		} else {
-			log.Println("Connected to database when retrying")
-		}
-	} else {
-		fmt.Fprintln(w, "Database connection successful")
-	}
-}
-
-func ping(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Pong !")
-	log.Println("Pong !")
-}
-
-func welcome(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to the homepage!")
-}
 
 func main() {
 	var wg sync.WaitGroup
-	
+
+	var conf, err = config.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var conn = database.DBConnection{}
+
+	err = conn.InitConnection(conf.Database.ConnStr)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	wg.Add(1)
 
 	// setup router
 	router := mux.NewRouter()
 
-	
 	// setup routes
-	router.HandleFunc("/", welcome).Methods("GET")
-	router.HandleFunc("/ping", ping).Methods("GET")
-	router.HandleFunc("/status", status).Methods("GET")
-	
+	router.HandleFunc("/", handlers.Welcome).Methods("GET")
+	router.HandleFunc("/ping", handlers.Ping).Methods("GET")
+	router.HandleFunc("/status", handlers.Status(conn.Conn)).Methods("GET")
+
 	// make channel for graceful shutdown
 	c := make(chan os.Signal, 1)
 
@@ -86,8 +47,8 @@ func main() {
 		defer wg.Done()
 		log.Println("Starting server...")
 		srv := &http.Server{
-			Handler: router,
-			Addr:    "0.0.0.0:80",
+			Handler:      router,
+			Addr:         "0.0.0.0:80",
 			WriteTimeout: 15 * time.Second,
 			ReadTimeout:  15 * time.Second,
 		}
