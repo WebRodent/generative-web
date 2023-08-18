@@ -44,6 +44,8 @@ func LoadTemplate(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 	template := templates.LoadTemplate(name)
 
-	fmt.Fprintf(w, "Template loaded successfully: %v", template.Name)
+	fmt.Fprintf(w, "Template loaded successfully: %v\n\n", template.Name)
+
+	fmt.Fprintf(w, "Template: \n%v", template)
 
 }
