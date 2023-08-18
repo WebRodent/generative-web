@@ -1,4 +1,4 @@
-package generativeweb
+package main
 
 import (
 	"log"
@@ -36,10 +36,12 @@ func main() {
 	router := mux.NewRouter()
 
 	// setup routes
+	// basic routes
 	router.HandleFunc("/", handlers.Welcome).Methods("GET")
 	router.HandleFunc("/ping", handlers.Ping).Methods("GET")
 	router.HandleFunc("/status", handlers.Status(conn.Conn)).Methods("GET")
-
+	// route for loading template using query parameter
+	router.HandleFunc("/template-load", handlers.LoadTemplate).Methods("GET")
 	// make channel for graceful shutdown
 	c := make(chan os.Signal, 1)
 

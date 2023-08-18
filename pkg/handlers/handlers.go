@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"generative-web/pkg/templates"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -35,4 +37,13 @@ func Ping(w http.ResponseWriter, r *http.Request) {
 
 func Welcome(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the generative web AI, go to /docs for more information")
+}
+
+func LoadTemplate(w http.ResponseWriter, r *http.Request) {
+	// get template name from request
+	name := r.URL.Query().Get("name")
+	template := templates.LoadTemplate(name)
+
+	fmt.Fprintf(w, "Template loaded successfully: %v", template.Name)
+
 }

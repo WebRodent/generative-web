@@ -2,12 +2,7 @@
 	"name": "Go and TimescaleDB Composed",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
-	"features": {
-		"ghcr.io/devcontainers/features/docker-from-docker:1": {
-			"version": "latest",
-			"moby": false
-		}
-	},
+	"features": {},
 	"workspaceFolder": "/workspaces/generative-web",
 	// Configure tool-specific properties.
 	"customizations": {
