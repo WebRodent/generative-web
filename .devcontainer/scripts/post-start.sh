@@ -7,4 +7,4 @@ set -e
 
 # Install tools
 # air is a live reload tool for Go apps
-go install github.com/cosmtrek/air@
+go install github.com/cosmtrek/air@v1.44.0
