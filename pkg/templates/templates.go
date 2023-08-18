@@ -43,27 +43,37 @@ func (t Template) Update() {
 		// and getting the last element of the resulting slice
 		ext := strings.Split(file.Name(), ".")[1]
 		contentBlockTarget := "GENWEB"
-		f := LoadFile(file.Name(), ext, contentBlockTarget)
+		filePath := fmt.Sprintf("templates/%[1]v/%[2]v", t.Name, file.Name())
+		f := LoadFile(filePath, ext, contentBlockTarget)
 		t.Files = append(t.Files, f)
 	}
 }
 
-func LoadFile(name string, ext string, contentBlockTarget string) File {
+func LoadFile(filePath string, ext string, contentBlockTarget string) File {
 	var f File
-	f.Path = name
+	f.Path = filePath
 	f.Type = ext
-	f.ContentBlocks = LoadContentBlocks(name, contentBlockTarget)
+	f.ContentBlocks = LoadContentBlocks(filePath, contentBlockTarget)
 	return f
 }
 
-func LoadContentBlocks(name string, contentBlockTarget string) []ContentBlock {
+func LoadContentBlocks(filePath string, contentBlockTarget string) []ContentBlock {
 	var contentBlocks []ContentBlock
 	// open file
-	_, err := os.Open("templates/" + name)
+	file, err := os.Open(filePath)
 	if err != nil {
 		fmt.Errorf("error opening file: %v", err)
 	}
+	var content []byte
+	var nBytes int
+	nBytes, err = file.Read(content)
+	if err != nil {
+		fmt.Errorf("error reading file: %v", err)
+	}
 	// read file
+	for i := 0; i < nBytes; i++ {
+		fmt.Println(fmt.Sprintf("A byte in the file: %v", content[i]))
+	}
 
 	return contentBlocks
 }
