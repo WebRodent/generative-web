@@ -15,6 +15,7 @@
 !go.mod
 !go.sum
 !main.go
+!main_test.go
 !config.yml.example
 
 # air config file
@@ -25,6 +26,7 @@
 !internal
 !pkg
 !templates
+!tests
 !.devcontainer
 !.github
 !.github/workflows
