@@ -4,6 +4,8 @@ volumes:
   # create colume db-data for postgres
   db-data:
     driver: local
+  home:
+    driver: local
 
 networks:
   backend:
@@ -21,6 +23,7 @@ services:
       - backend
     volumes:
       - ..:/workspaces/generative-web:cached
+      - ~:/home/vscode:cached
     #command installs the go dependencies and then overrites the entrypoint to run the app
     command: [ "bash", "-c", "while sleep 1000; do :; done" ]
 
