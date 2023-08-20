@@ -33,6 +33,7 @@ func RequestSimple(conf config.Config, prompt []string, engine string, max_token
 	// setup options
 	options := &azopenai.CompletionsOptions{
 		Prompt:           prompt,
+		DeploymentID:     engine,
 		MaxTokens:        &max_tokens,
 		Temperature:      &temperature,
 		TopP:             &top_p,

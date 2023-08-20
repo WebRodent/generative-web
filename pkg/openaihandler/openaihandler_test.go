@@ -14,7 +14,7 @@ func TestRequestSimple(t *testing.T) {
 	}
 	var prompt []string
 	prompt = []string{"This is a test"}
-	var engine string = "davinci"
+	var engine string = "ada"
 	var max_tokens int32 = 5
 	var temperature float32 = 0.5
 	var top_p float32 = 1
@@ -26,5 +26,6 @@ func TestRequestSimple(t *testing.T) {
 		t.Errorf("Error: %s", err)
 	}
 	fmt.Println(response)
+	// print response body
 
 }
