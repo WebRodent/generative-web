@@ -12,13 +12,27 @@ func TestRequestSimple(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error: %s", err)
 	}
+	var topics []string
+	topics = []string{
+		"IaC",
+		"AI",
+		"Golang",
+		"Development",
+	}
 	var prompt []string
 	prompt = []string{
-		"Make a html file",
-		"html file should start with <html> tag",
-		"and end with </html>ENDFILE tag+ENDFILE",
-		"like this:",
+		`Make a html file
+		html file should start with <html> tag
+		and end with </html>ENDFILE tag+ENDFILE
+		html file should follow a few content requirements
+		html file is a blog post
+		the blog discusses the following topics:
+		`,
 	}
+	for _, topic := range topics {
+		prompt[0] = prompt[0] + topic + ", "
+	}
+	prompt = append(prompt, "The html file:")
 	var engine string = "text-davinci-003"
 	var max_tokens int32 = 1024
 	var temperature float32 = 0.5
@@ -26,7 +40,19 @@ func TestRequestSimple(t *testing.T) {
 	var frequency_penalty float32 = 0
 	var presence_penalty float32 = 0
 	var stop []string = []string{"ENDFILE"}
-	response, err := RequestSimple(conf, prompt, engine, max_tokens, temperature, top_p, frequency_penalty, presence_penalty, stop, 1)
+	var n int32 = 0
+	response, err := RequestSimple(
+		conf,
+		prompt,
+		engine,
+		max_tokens,
+		temperature,
+		top_p,
+		frequency_penalty,
+		presence_penalty,
+		stop,
+		n,
+	)
 	if err != nil {
 		t.Errorf("Error: %s", err)
 	}
