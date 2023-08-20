@@ -31,5 +31,7 @@ jobs:
         fi
     - name: Create config.yml from example
       run: cp config.yml.example config.yml
+    - name: Replace values
+      run: sed -i 's/0.0.0.0/localhost/g; s/80/8080/g'
     - name: Run tests
       run: go test -v ./...
