@@ -8,7 +8,7 @@ import (
 
 // test simple request
 func TestRequestSimple(t *testing.T) {
-	conf, err := config.Load()
+	conf, err := config.Load("../../config.yml")
 	if err != nil {
 		t.Errorf("Error: %s", err)
 	}

@@ -16,7 +16,7 @@ import (
 
 func Start(wg *sync.WaitGroup) {
 
-	var conf, err = config.Load()
+	var conf, err = config.Load("config.yml")
 	if err != nil {
 		log.Fatal(err)
 	}
