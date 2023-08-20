@@ -9,7 +9,7 @@ import (
 	"generative-web/internal/config"
 )
 
-func RequestSimple(conf config.Config, prompt []string, engine string, max_tokens int32, temperature float32, top_p float32, frequency_penalty float32, presence_penalty float32, stop []string) (string, error) {
+func RequestSimple(conf config.Config, prompt []string, engine string, max_tokens int32, temperature float32, top_p float32, frequency_penalty float32, presence_penalty float32, stop []string, n int32) (string, error) {
 	// check if api key is not set
 	if conf.OpenAI.ApiKey == "" {
 		return "", fmt.Errorf("API key not set")
@@ -39,6 +39,7 @@ func RequestSimple(conf config.Config, prompt []string, engine string, max_token
 		TopP:             &top_p,
 		FrequencyPenalty: &frequency_penalty,
 		PresencePenalty:  &presence_penalty,
+		N:                &n,
 		Stop:             stop,
 	}
 
@@ -48,6 +49,20 @@ func RequestSimple(conf config.Config, prompt []string, engine string, max_token
 		return "", err
 	}
 
+	for _, choice := range response.Choices {
+		if choice.Text != nil {
+			fmt.Println(*choice.Text)
+		}
+		if choice.Index != nil {
+			fmt.Println(*choice.Index)
+		}
+		if choice.LogProbs != nil {
+			fmt.Println(*choice.LogProbs)
+		}
+		if choice.FinishReason != nil {
+			fmt.Println(*choice.FinishReason)
+		}
+	}
 	// print response
 	fmt.Println(response)
 
