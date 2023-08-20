@@ -14,8 +14,7 @@ import (
 	"generative-web/pkg/handlers"
 )
 
-func main() {
-	var wg sync.WaitGroup
+func Start(wg *sync.WaitGroup) {
 
 	var conf, err = config.Load()
 	if err != nil {
@@ -63,4 +62,9 @@ func main() {
 	log.Println("Server started on port " + os.Getenv("PORT"))
 	wg.Wait()
 	log.Println("Server stopped")
+}
+
+func main() {
+	var wg sync.WaitGroup
+	Start(&wg)
 }
