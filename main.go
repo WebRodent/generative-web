@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -49,7 +50,7 @@ func Start(wg *sync.WaitGroup) {
 		log.Println("Starting server...")
 		srv := &http.Server{
 			Handler:      router,
-			Addr:         "0.0.0.0:80",
+			Addr:         fmt.Sprintf("%s:%d", conf.Server.Host, conf.Server.Port),
 			WriteTimeout: 15 * time.Second,
 			ReadTimeout:  15 * time.Second,
 		}
