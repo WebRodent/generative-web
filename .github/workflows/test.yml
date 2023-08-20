@@ -29,5 +29,7 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
+    - name: Create config.yml from example
+      run: cp config.yml.example config.yml
     - name: Run tests
       run: go test -v ./...
