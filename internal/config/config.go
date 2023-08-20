@@ -2,8 +2,9 @@ package config
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"io/ioutil"
+
+	"gopkg.in/yaml.v3"
 )
 
 type ServerConfig struct {
@@ -15,15 +16,20 @@ type DatabaseConfig struct {
 	ConnStr string `yaml:"connStr"`
 }
 
+type OpenAIConfig struct {
+	ApiKey string `yaml:"api-key"`
+}
+
 type Config struct {
 	Server   ServerConfig   `yaml:"server"`
 	Database DatabaseConfig `yaml:"database"`
+	OpenAI   OpenAIConfig   `yaml:"openai"`
 }
 
 func Load() (Config, error) {
 	// Load and parse the configuration from a file or environment variables
 	// Return the loaded configuration
-	yamlFile, err := ioutil.ReadFile("config.yml")
+	yamlFile, err := ioutil.ReadFile("../../config.yml")
 	if err != nil {
 		return Config{}, fmt.Errorf("Failed to read YAML file: %v", err)
 	}
