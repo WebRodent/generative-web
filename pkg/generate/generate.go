@@ -2,35 +2,39 @@ package generate
 
 import (
 	"fmt"
-
 	"generative-web/pkg/templates"
+	"generative-web/pkg/openaihandler"
 )
 
-type Prompt interface {
-	Generate() (string, error)
-	AddRequirements([]string) error
-}
-
-type GenerateContext struct {
-	Prompt   Prompt
+type ContentFactory struct {
 	Template templates.Template
-	blocks   []int
+	Themes   []string
 }
 
-type PreBuiltTags struct {
-	PreText    string
-	TagsList   []string
-	ResultText string
-}
-
-func (pbt *PreBuiltTags) AddRequirements(reqs []string) error {
-	pbt.TagsList = reqs
-	return nil
-}
-
-func (pbt *PreBuiltTags) Generate() (string, error) {
-	if pbt.TagsList == nil {
-		return "", fmt.Errorf("No tags specified")
+func CreateContentFactory(template templates.Template, themes []string) (ContentFactory, error) {
+	// check if template is a valid template
+	if template.Name == "" {
+		return ContentFactory{}, fmt.Errorf("empty template name")
 	}
-	return pbt.PreText, nil
+	if len(template.Files) == 0 {
+		return ContentFactory{}, fmt.Errorf("template has no files")
+	}
+	var cf ContentFactory
+	cf.Template = template
+	cf.Themes = themes
+	return cf, nil
 }
+
+func (cf *ContentFactory) Generate() (string, error) {
+	var content string
+	fmt.Println(fmt.Sprintf("generating instance of template: %v", cf.Template.Name))
+	if cf.Themes != nil {
+		fmt.Println(fmt.Sprintf("Themes: %v", cf.Themes))
+		for _, file := range cf.Template.Files {
+			fmt.Println(fmt.Sprintf("File: %v", file.Path))
+			for _, contentBlock := range file.ContentBlocks {
+				fmt.Println(fmt.Sprintf("Content Block: %v", contentBlock))
+				prompt := contentBlock.GeneratePromptFromThemes(cf.Themes)
+				fmt.Println(fmt.Sprintf("Prompt: %v", prompt))
+				openaihandler.RequestSimple()
+

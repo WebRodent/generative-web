@@ -26,10 +26,10 @@ type Config struct {
 	OpenAI   OpenAIConfig   `yaml:"openai"`
 }
 
-func Load() (Config, error) {
+func Load(path string) (Config, error) {
 	// Load and parse the configuration from a file or environment variables
 	// Return the loaded configuration
-	yamlFile, err := ioutil.ReadFile("config.yml")
+	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
 		return Config{}, fmt.Errorf("Failed to read YAML file: %v", err)
 	}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -16,7 +17,7 @@ import (
 
 func Start(wg *sync.WaitGroup) {
 
-	var conf, err = config.Load()
+	var conf, err = config.Load("config.yml")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -40,7 +41,7 @@ func Start(wg *sync.WaitGroup) {
 	router.HandleFunc("/ping", handlers.Ping).Methods("GET")
 	router.HandleFunc("/status", handlers.Status(conn.Conn)).Methods("GET")
 	// route for loading template using query parameter
-	router.HandleFunc("/template-load", handlers.LoadTemplate).Methods("GET")
+	router.HandleFunc("/template/load", handlers.LoadTemplate).Methods("GET")
 	// make channel for graceful shutdown
 	c := make(chan os.Signal, 1)
 
@@ -49,7 +50,7 @@ func Start(wg *sync.WaitGroup) {
 		log.Println("Starting server...")
 		srv := &http.Server{
 			Handler:      router,
-			Addr:         "0.0.0.0:80",
+			Addr:         fmt.Sprintf("%s:%d", conf.Server.Host, conf.Server.Port),
 			WriteTimeout: 15 * time.Second,
 			ReadTimeout:  15 * time.Second,
 		}

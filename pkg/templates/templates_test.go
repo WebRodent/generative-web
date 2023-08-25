@@ -30,7 +30,7 @@ func TestParseContentBlocks(t *testing.T) {
 		[]byte("{  type:html, content:  \"<h1>Hello World!</h1>\"   }"),
 	}
 	for _, rawBlock := range rawBlocks {
-		cblock.Parse(rawBlock)
+		cblock.ParseJson(rawBlock)
 		fmt.Println(cblock)
 	}
 }

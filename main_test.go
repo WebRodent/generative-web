@@ -7,9 +7,15 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"generative-web/internal/config"
 )
 
 func TestServer(t *testing.T) {
+	conf, err := config.Load("config.yml")
+	if err != nil {
+		t.Errorf("Error: %s", err)
+	}
 	var endpoints = []string{
 		"/",
 		"/ping",
@@ -22,8 +28,9 @@ func TestServer(t *testing.T) {
 	// halt program to allow server to start
 	time.Sleep(1 * time.Second)
 	// make a ping request to the server
+	var baseUrl string = fmt.Sprintf("http://%s:%d", conf.Server.Host, conf.Server.Port)
 	for _, endpoint := range endpoints {
-		response, err := http.Get(fmt.Sprintf("http://localhost%v", endpoint))
+		response, err := http.Get(fmt.Sprintf("%s%s", baseUrl, endpoint))
 		if err != nil {
 			t.Errorf("Error: %s", err)
 		}
