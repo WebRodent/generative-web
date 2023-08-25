@@ -41,7 +41,7 @@ func Start(wg *sync.WaitGroup) {
 	router.HandleFunc("/ping", handlers.Ping).Methods("GET")
 	router.HandleFunc("/status", handlers.Status(conn.Conn)).Methods("GET")
 	// route for loading template using query parameter
-	router.HandleFunc("/template-load", handlers.LoadTemplate).Methods("GET")
+	router.HandleFunc("/template/load", handlers.LoadTemplate).Methods("GET")
 	// make channel for graceful shutdown
 	c := make(chan os.Signal, 1)
 

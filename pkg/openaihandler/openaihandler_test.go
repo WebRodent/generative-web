@@ -1,7 +1,13 @@
 package openaihandler
 
+import (
+	"fmt"
+	"generative-web/internal/config"
+	"testing"
+)
+
 // test simple request
-/* // cant test this because of openai api key
+// cant test this because of openai api key
 func TestRequestSimple(t *testing.T) {
 	conf, err := config.Load("../../config.yml")
 	if err != nil {
@@ -28,14 +34,14 @@ func TestRequestSimple(t *testing.T) {
 		prompt[0] = prompt[0] + topic + ", "
 	}
 	prompt = append(prompt, "The html file:")
-	var engine string = "text-davinci-003"
-	var max_tokens int32 = 1024
+	var engine string = "ada"
+	var max_tokens int32 = 1
 	var temperature float32 = 0.5
 	var top_p float32 = 1
 	var frequency_penalty float32 = 0
 	var presence_penalty float32 = 0
 	var stop []string = []string{"ENDFILE"}
-	var n int32 = 0
+	var n int32 = 1
 	response, err := RequestSimple(
 		conf,
 		prompt,
@@ -55,4 +61,3 @@ func TestRequestSimple(t *testing.T) {
 	// print response body
 
 }
-*/

@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -8,11 +9,12 @@ import (
 )
 
 type ContentBlock struct {
+	/*
+		ContentBlock struct is used to store options
+		that will be used to generate content for that spesific block,
+		together with user guided input
+	*/
 	BlockOptions map[string]string `json:"options"`
-}
-
-type ContentBlockInterface interface {
-	Parse()
 }
 
 type File struct {
@@ -126,7 +128,7 @@ func LoadContentBlocks(filePath string, contentBlockTarget string) []ContentBloc
 						}
 						// parse content block
 						var contentBlock ContentBlock
-						contentBlock.Parse(contentBlockRaw)
+						contentBlock.ParseJson(contentBlockRaw)
 						contentBlocks = append(contentBlocks, contentBlock)
 
 					}
@@ -141,61 +143,21 @@ func LoadContentBlocks(filePath string, contentBlockTarget string) []ContentBloc
 	return contentBlocks
 }
 
-func (cblock *ContentBlock) Parse(raw []byte) {
-	fmt.Println("Parsing content block...")
-	fmt.Println(fmt.Sprintf("Raw: %v", string(raw)))
-	// Extract content block values for each key by this format: { key:"value"    ,key2 :  "value2",  ... }
-	// first search raw for a : character, then keep the characters before it as the key
-	// then search for two " characters, then keep the characters between them as the value
-	// then search for a , character, then repeat the process
+func (cblock *ContentBlock) ParseJson(rawJson []byte) {
+	json.Unmarshal(rawJson, &cblock.BlockOptions)
+}
 
-	// first, remove all whitespace from raw, and brackets
-	var rawClean []byte
-	var keys [][]byte
-	var values [][]byte
-	for i := 0; i < len(raw); i++ {
-		// if character is not whitespace or a bracket, or a " character, keep it
-		if raw[i] != 32 && raw[i] != 123 && raw[i] != 34 {
-			rawClean = append(rawClean, raw[i])
-			// if : is found, extract key
-			if raw[i] == 58 {
-				//fmt.Println(fmt.Sprintf("Found %v", string(raw[i])))
-				var key []byte
-				key = rawClean
-				//fmt.Println(fmt.Sprintf("Key: %v", string(key)))
-				keys = append(keys, key)
-				rawClean = make([]byte, 0)
-			}
-			// if , is found, extract value
-			if raw[i] == 44 || raw[i] == 125 {
-				//fmt.Println(fmt.Sprintf("Found %v", string(raw[i])))
-				var value []byte
-				value = rawClean
-				//fmt.Println(fmt.Sprintf("Value: %v", string(value)))
-				values = append(values, value)
-				rawClean = make([]byte, 0)
-			}
-
-		}
+func (cblock *ContentBlock) GeneratePromptFromThemes(themes []string) (string, error) {
+	var prompt string
+	prompt = fmt.Sprintf("Create a %[0]s in the format of a %[1]s\n", cblock.BlockOptions["content"], cblock.BlockOptions["format"])
+	prompt = prompt + fmt.Sprintf("The %s should involve the themes:\n", cblock.BlockOptions["content"])
+	for _, theme := range themes {
+		prompt = prompt + fmt.Sprintf("%s, ", theme)
 	}
-	//fmt.Println(fmt.Sprintf("Raw clean: %v", string(rawClean)))
-	//fmt.Println(fmt.Sprintf("Keys: %v", len(keys)))
-	//fmt.Println(fmt.Sprintf("Values: %v", len(values)))
-	// for each key, clean the : character from the end
-	for i := 0; i < len(keys); i++ {
-		keys[i] = keys[i][:len(keys[i])-1]
-	}
-	//fmt.Println(fmt.Sprintf("Keys: %v", len(keys)))
-	// for each value, clean the , character from the end
-	for i := 0; i < len(values); i++ {
-		values[i] = values[i][:len(values[i])-1]
-	}
-	//fmt.Println(fmt.Sprintf("Values: %v", len(values)))
-
-	cblock.BlockOptions = make(map[string]string)
-	for i := 0; i < len(keys); i++ {
-		cblock.BlockOptions[string(keys[i])] = string(values[i])
-	}
-	//fmt.Println(fmt.Sprintf("Content block: %v", cblock))
-
+	prompt = prompt + "\n"
+	prompt = prompt + "Start the content with:\n"
+	prompt = prompt + "STARTBLOCK\n"
+	prompt = prompt + "End the content with:\n"
+	prompt = prompt + "ENDBLOCK\n"
+	return prompt, nil
 }
